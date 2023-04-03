@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "dev": "parcel ./src/index.html",
+    "dev": "parcel serve ./src/index.html",
     "build": "parcel build ./src/index.html --dist-dir docs --public-url ./",
     "clean": "del-cli ./.parcel-cache ./docs ./dist"
   },
@@ -12,9 +12,15 @@
   "license": "ISC",
   "devDependencies": {
     "del-cli": "^5.0.0",
-    "parcel": "^2.8.3"
+    "parcel": "^2.8.3",
+    "process": "^0.11.10"
   },
   "dependencies": {
+    "emoji-picker-element": "^1.16.0",
+    "firebase": "^9.18.0",
     "typescript": "^5.0.2"
+  },
+  "directories": {
+    "doc": "docs"
   }
 }

@@ -19,7 +19,11 @@ body {
   border-radius: 5px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
   width: 100%;
+  max-width: 520px;
+}
+.index-container{
   max-width: 400px;
+  width: 100%;
 }
 
 h2 {
@@ -68,3 +72,9 @@ a {
 a:hover {
   text-decoration: underline;
 }
+
+
+img{
+  max-width: 80px;
+}
+
