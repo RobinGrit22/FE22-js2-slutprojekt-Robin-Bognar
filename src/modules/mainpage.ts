@@ -4,7 +4,9 @@ import { getDatabase, ref, onValue, get } from 'firebase/database';
 import { fetchUsers } from './firebase';
 import { createPost } from './firebase';
 import { updateLikes } from './firebase';
-import 'emoji-picker-element';
+import { logOutAccount } from './firebase';
+import { deleteAccount } from './firebase';
+
 
 //main function för att lägga i window EventListener så att allt annat laddar innan den körs.
 const main = () => {
@@ -50,7 +52,7 @@ const main = () => {
           });
           //kalla på visa inlägg
           displayPosts();
-        
+          displayTop10LikedPosts();
         
         //Visa users på höger section
         fetchUsers().then((users) => {
@@ -60,12 +62,17 @@ const main = () => {
         interface User {
         username: string;
          }
-(Object.values(users) as User[]).forEach((user: User) => {
-  const container = document.querySelector('.user-container');
-  const p = document.createElement('p');
-  container?.append(p);
-  p && (p.innerText = user.username);
-});
+         (Object.entries(users) as [string, User][]).forEach(([userId, user]) => {
+          const container = document.querySelector('.user-names');
+          const p = document.createElement('p');
+          p.setAttribute('data-user-id', userId);
+          container?.append(p);
+          p && (p.innerText = user.username);
+        
+          p.addEventListener('click', () => {
+            window.location.href = `./profile.html?userId=${userId}`;
+          });
+        });
         });
       } else {
         console.log('No user is signed in');
@@ -120,40 +127,47 @@ const displayPosts = () => {
     const postContainer = document.getElementById('postsList');
 
     if (posts && postContainer) {
-      postContainer.innerHTML = ''; 
-      
-      for (const [id, post] of Object.entries(posts) as [string, Post][]) {
+      postContainer.innerHTML = '';
+
+      // Create an array of post objects with their respective IDs
+      const postArray = Object.entries(posts).map(([id, post]) => ({ id, userId: (post as Post).userId, content: (post as Post).content, createdAt: (post as Post).createdAt, likes: (post as Post).likes }));
+     
+
+
+      // Sort the array based on createdAt attribute in descending order
+      postArray.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+
+      for (const post of postArray) {
         const userSnapshot = await get(ref(db, `users/${post.userId}`));
         const user = userSnapshot.val();
-      
+
         const postItem = document.createElement('div');
         postItem.className = 'post-item';
         postItem.innerHTML = `
-          <h5>${user.username}</h5>
-          <p>${post.content}</p>
-          <p>${post.createdAt}</p>
+          <h5 class="postName">${user.username}</h5>
+          <p class="postContent">${post.content}</p>
+          <p class="postTime">${post.createdAt}</p>
           <div class="post-actions">
-          <a class="like-btn" data-post-id="${id}"><i class="far fa-heart"></i> ${post.likes}</a>
-
+          <a class="like-btn" data-post-id="${post.id}"><i class="far fa-heart"></i> ${post.likes}</a>
             <a class="reply-btn"><i class="far fa-comment"></i></a>
           </div>
         `;
-      
+
         postContainer.appendChild(postItem);
 
         const likeBtn = postItem.querySelector('.like-btn') as HTMLElement;
         if (likeBtn) {
-            likeBtn.addEventListener('click', (event) => {
-              event.preventDefault();
-              handleLike(event, id, post.userId);
-            });
-          
+          likeBtn.addEventListener('click', (event) => {
+            event.preventDefault();
+            handleLike(event, post.id, post.userId);
+            
+          });
         }
-        
       }
     }
-  })
+  });
 };
+
 
 
 
@@ -172,23 +186,63 @@ async function handleLike(event: Event, postId: string, userId: string) {
 
     // Update the likes count in the database
     const updatedLikes = currentLikes + 1;
-    await updateLikes(event, postId, updatedLikes);
+    await updateLikes( postId, updatedLikes);
 
      // Toggle the liked class for the heart icon
      const likeButton = event.target as HTMLElement;
-     const heartIcon = likeButton.querySelector('i');
-     if (heartIcon) {
-       if (heartIcon.style.color === 'red') {
-         heartIcon.style.color = '';
-       } else {
-         heartIcon.style.color = 'red';
-       }
-     }
      likeButton.textContent = ` Likes: ${updatedLikes}`;
    } else {
      console.error(`Unable to find post data for post ID: ${postId}`);
    }
  }
 
+//visa top 10 liked inlägg
+ const displayTop10LikedPosts = async () => {
+  const db = getDatabase();
+  const postsRef = ref(db, 'posts');
+  const snapshot = await get(postsRef);
+  const posts = snapshot.val();
+
+  const postArray = Object.entries(posts).map(([id, post]) => ({ id, userId: (post as Post).userId, content: (post as Post).content, createdAt: (post as Post).createdAt, likes: (post as Post).likes }));
+ 
+  postArray.sort((a, b) => b.likes - a.likes);
+  const top10Posts = postArray.slice(0, 5);
+  
+  const top10PostsContainer = document.getElementById('top10LikedPosts');
+
+  if (top10PostsContainer) {
+    top10PostsContainer.innerHTML = '';
+
+    for (const post of top10Posts) {
+      const userSnapshot = await get(ref(db, `users/${post.userId}`));
+      const user = userSnapshot.val();
+
+      const postItem = document.createElement('div');
+      postItem.className = 'postLiked10';
+      postItem.innerHTML = `
+        <h5 class="postNameLiked">${user.username}</h5>
+        <p class="postContentLiked">${post.content}</p>
+        <p class="postLikesLiked">Likes: ${post.likes}</p>
+      `;
+
+      top10PostsContainer.appendChild(postItem);
+    }
+  }
+};
 
 
+//logga ut
+const logOutBtn = document.querySelector('#loggOutBtn') as HTMLElement;
+logOutBtn.addEventListener('click', () =>{
+   logOutAccount().then(() => {
+    location.assign('../index.html');
+  });
+})
+
+//radera konto
+const deleteAccountBtn = document.querySelector('#deleteAccountBtn') as HTMLElement
+deleteAccountBtn.addEventListener('click', () => {
+  deleteAccount().then(() => {
+    location.assign('../index.html');
+  });
+})

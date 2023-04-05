@@ -152,7 +152,6 @@ body {
   bottom: 0;
   width: 100%;
   padding: 0 1rem;
-  display: flex;
   align-items: center;
   position: fixed;
 }
@@ -167,12 +166,23 @@ body {
   border: none;
   border-radius: 20px;
   font-size: 14px;
-  padding: 5px 15px;
-  margin: 5px 0;
-  margin-left: 10px;
+ 
   height: 30px;
 }
 #loggOutBtn:hover{
+  cursor: pointer;
+  background-color: #2390d3;
+}
+#deleteAccountBtn{
+  background-color: #1da1f2;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  font-size: 14px;
+  margin: 5px 0;
+  height: 30px;
+}
+#deleteAccountBtn:hover{
   cursor: pointer;
   background-color: #2390d3;
 }
@@ -188,9 +198,87 @@ body {
   letter-spacing: 2px;
 }
 
-.liked {
-  color: red;
+.post-item{
+  border-bottom: 1px solid #cccccc;
+  padding-left: 10px;
 }
-.fa-heart{
-  background-color: red;
+.reply-btn{
+  margin-left: 10px;
+}
+
+#top10LikedPosts{
+  margin-left: 70px;
+  background-color: #f1f9fa;
+  border-radius: 30px;
+  width: 300px;
+ 
+}
+.postLiked10{
+  margin-left: 20px;
+  margin-right: 20px;
+  margin-top: 20px;
+  border-bottom: 1px solid #cccccc;
+  
+}
+
+
+
+#gillade-h3-style{
+  margin-left: 90px;
+  margin-top: 40px;
+  font-size: 1.5rem;
+ 
+}
+#profil-h3-style{
+  margin-left: 90px;
+  margin-top: 40px;
+  font-size: 1.5rem;
+  
+}
+
+.user-container{
+  margin-left: 70px;
+  width: 300px;
+  min-height: 200px;
+  background-color: #f1f9fa;
+  border-radius: 30px;
+ 
+}
+
+
+.user-names{
+  margin-left: 20px;
+  margin-right: 20px;
+  margin-top: 20px;
+}
+
+.postName{
+  font-size: 1.2rem;
+}
+
+.post-actions{
+  margin-bottom: 10px;
+}
+
+.postContent{
+  font-size: 1.1rem;
+}
+.postTime{
+  font-size: 0.6rem;
+}
+.fa-heart:hover{
+  color: red;
+  cursor: pointer;
+}
+.fa-comment:hover{
+  color: aqua;
+  cursor: pointer;
+}
+.left-content-style a {
+  text-decoration: none;
+  color: inherit;
+}
+.user-names p:hover {
+  cursor: pointer;
+  font-size: 1.1rem;
 }

@@ -10,6 +10,9 @@ document.querySelector('form')?.addEventListener('submit', (event) => {
     const profileImage = (document.querySelector('input[name="profile-image"]:checked') as HTMLInputElement).value;
     if (password === confirmPassword) {
         createUserAccount(email, password, username, profileImage)
+        .then(() =>{
+          location.assign('../index.html')
+        })
       } else {
         alert('Password dosent match')
       }

@@ -3,10 +3,12 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <script src="../modules/mainpage.ts" type="module"></script>
+    <!-- <script src="../modules/mainpage.ts" type="module"></script> -->
+    <script src="../modules/profile.ts" type="module"></script>
     <link rel="stylesheet" href="../css/mainpage.css">
+    <link rel="stylesheet" href="../css/profile.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" crossorigin="anonymous">
-    <title>Main Page</title>
+    <title>Profile Page</title>
   </head>
   <body>
     <div class="container">
@@ -15,12 +17,12 @@
         <div class="left-items">
         <div class="stay-fixed">
           <div class="left-content-style">
-            <h4><i class="fas fa-home"></i>Hem</h4>
+            <a href="./mainpage.html"><h4><i class="fas fa-home"></i>Hem</h4></a>
             <p><i class="fas fa-compass"></i> Utforska</p>
             <p><i class="fas fa-envelope"></i> Meddelande</p>
             <p><i class="fas fa-bell"></i> Notiser</p>
             <p><i class="fas fa-bookmark"></i> Bokmärken</p>
-            <a href="./profile.html"><p><i class="fas fa-user"></i> Profil</p></a>
+            <p><i class="fas fa-user"></i> Profil</p>
           
           <div class="logout-container">
             <p></p>
@@ -35,26 +37,21 @@
         <!-- Posts -->
  <!-- ... -->
   <div class="mid-container">
-  <h1 class="gritter-style">Gritter</h1>
-  <div id="userAndImage">
+  <h1 class="gritter-style">Profile</h1>
+  <div id="userAndImage" class="profileStyle">
     <div id="imageAndUsername">
       <img id="profileImage" src="#" alt="Profile Image" />
       <h4 id="username">Username</h4>
     </div>
+        
 
-    <div id="post">
-    <form id="newPostForm">
-      <label for="postContent"></label>
-      <input type="text" id="postContent" placeholder="Vad händer?" />
-    </div>
 
-    <div id="buttonRow">
-      <a href="#" id="addImage"><i class="fas fa-image"></i></a>
-      <a href="#" id="addGif"><i class="fas fa-photo-video"></i></a>
-      <a href="#" id="emojiBtn"><i class="fas fa-smile"></i></a>
-      <button id="postBtn">Publicera</button>
-    </div>
-    </form>
+     <div>
+        <h1 id="h1Style">Inlägg</h1>
+     </div>
+
+
+
     </div>
           <div id="postsList">
           </div> 

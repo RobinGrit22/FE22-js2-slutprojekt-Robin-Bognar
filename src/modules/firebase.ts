@@ -7,7 +7,7 @@ export {createUserWithEmailAndPassword}
 // https://firebase.google.com/docs/web/setup#available-libraries
 
 // Your web app's Firebase configuration
-const firebaseConfig = {
+export const firebaseConfig = {
   apiKey: "AIzaSyCN1Jajc93QLNy2svLcSEikRTS2z-j6jV0",
   authDomain: "js2slutprojekt.firebaseapp.com",
   databaseURL: "https://js2slutprojekt-default-rtdb.europe-west1.firebasedatabase.app",
@@ -21,7 +21,6 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const database = getDatabase(app);
-
 const auth = getAuth();
 
 //Hantera error
@@ -30,10 +29,6 @@ type FirebaseAuthError = {
   message: string;
 };
 
-// //Hämta products från databasen
-// const productsRef = ref(database, 'users');
-// const productsSnapshot = await get(productsRef);
-// const users = productsSnapshot.val();
 
 // Lägg till användare till auth och realtime funktion
 export const createUserAccount = async (email: string, password: string, username: string, imageSrc: string) => {
@@ -49,6 +44,7 @@ export const createUserAccount = async (email: string, password: string, usernam
       username: username,
       image: imageSrc
     });
+    return userCredential; 
   } catch (error) {
     const err = error as FirebaseAuthError;
     const errorCode = err.code;
@@ -67,6 +63,46 @@ export const logInAccount = (email: string, password: string): Promise<void> => 
   });
 };
 
+
+
+
+// Logga ut
+export const logOutAccount = async (): Promise<void> => {
+  const auth = getAuth();
+  try {
+    await firebaseSignOut(auth);
+    console.log("User signed out");
+  } catch (error) {
+    console.error("Error signing out:", error);
+  }
+};
+
+
+//radera konto
+export const deleteAccount = async (): Promise<void> => {
+  const auth = getAuth();
+  const user = auth.currentUser;
+
+  if (user) {
+    try {
+      // Delete user from the Realtime Database
+      const db = getDatabase();
+      const userRef = ref(db, `users/${user.uid}`);
+      await set(userRef, null);
+
+      // Delete user from the Authentication
+      await firebaseDeleteUser(user);
+      console.log("User account deleted");
+    } catch (error) {
+      console.error("Error deleting user account:", error);
+    }
+  } else {
+    console.error("No user is currently signed in");
+  }
+};
+
+
+
 //Inlägg
 export const createPost = async (userId: string, content: string) => {
   const db = getDatabase();
@@ -81,7 +117,7 @@ export const createPost = async (userId: string, content: string) => {
 };
 
 
-
+//hämta användare
 export const fetchUsers = async () => {
   const productsRef = ref(database, 'users');
   const productsSnapshot = await get(productsRef);
@@ -92,10 +128,8 @@ export const fetchUsers = async () => {
 
 
 //Uppdatera likes
-export const updateLikes = async (event: Event, postId: string, newLikes: number) => {
-  event.preventDefault()
+export const updateLikes = async ( postId: string, newLikes: number) => {
   const db = getDatabase();
   const postRef = ref(db, `posts/${postId}`);
-
   await update(postRef, { likes: newLikes });
 };
