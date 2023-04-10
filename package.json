@@ -4,9 +4,10 @@
   "description": "",
   "scripts": {
     "dev": "parcel serve ./src/index.html",
-    "build": "parcel build ./src/index.html --dist-dir docs --public-url ./",
+    "build": "parcel build ./src/index.html --public-url /FE22-js2-slutprojekt-robin-bognar/ --dist-dir docs",
     "clean": "del-cli ./.parcel-cache ./docs ./dist"
   },
+  
   "keywords": [],
   "author": "",
   "license": "ISC",
