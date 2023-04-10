@@ -32,29 +32,14 @@ const main = () => {
             userNameLogOutDisplay && (userNameLogOutDisplay.innerHTML = userData.username);
             userNameDisplay && (userNameDisplay.innerText = userData.username);
             if(userImageDisplay){
-              if(userData.image === '../image/unicorn.jpg'){
-                const imgUrl = new URL('../image/unicorn.jpg', import.meta.url)
-              userImageDisplay.src = imgUrl.href
-              }
-              if(userData.image === '../image/unicorn2.png'){
-                const imgUrl = new URL('../image/unicorn2.png', import.meta.url)
-              userImageDisplay.src = imgUrl.href
-              }
-              if(userData.image === '../image/unicorn3.png'){
-                const imgUrl = new URL('../image/unicorn3.png', import.meta.url)
-              userImageDisplay.src = imgUrl.href
-              }
-              if(userData.image === '../image/unicorn4.png'){
-                const imgUrl = new URL('../image/unicorn4.png', import.meta.url)
-              userImageDisplay.src = imgUrl.href
-              }
+             userImageDisplay.src = userData.image
             }
           });
           //kalla på visa inlägg
           displayPosts();
           displayTop10LikedPosts();
         
-        //Visa users på höger section
+        //Visa users på höger section och lägg till url för profil besök
         fetchUsers().then((users) => {
           console.log('users:', users);
           console.log(Object.values(users))
@@ -118,7 +103,7 @@ interface Post {
   likes: number;
 }
 
-const displayPosts = () => {
+export const displayPosts = (userId?: string) => {
   const db = getDatabase();
   const postsRef = ref(db, 'posts');
 
@@ -129,12 +114,12 @@ const displayPosts = () => {
     if (posts && postContainer) {
       postContainer.innerHTML = '';
 
-      // Create an array of post objects with their respective IDs
+      
       const postArray = Object.entries(posts).map(([id, post]) => ({ id, userId: (post as Post).userId, content: (post as Post).content, createdAt: (post as Post).createdAt, likes: (post as Post).likes }));
      
 
 
-      // Sort the array based on createdAt attribute in descending order
+      // Sortera array efter tid skapad
       postArray.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
       for (const post of postArray) {
@@ -171,24 +156,23 @@ const displayPosts = () => {
 
 
 
-
-async function handleLike(event: Event, postId: string, userId: string) {
+ //hantera likes
+export async function handleLike(event: Event, postId: string, userId: string) {
   event.preventDefault();
   
   const db = getDatabase();
   
-  // Fetch current likes count
   const postSnapshot = await get(ref(db, `posts/${postId}`));
   const postData = postSnapshot.val();
 
   if (postData) {
     const currentLikes = postData.likes;
 
-    // Update the likes count in the database
+    
     const updatedLikes = currentLikes + 1;
     await updateLikes( postId, updatedLikes);
 
-     // Toggle the liked class for the heart icon
+     
      const likeButton = event.target as HTMLElement;
      likeButton.textContent = ` Likes: ${updatedLikes}`;
    } else {
@@ -197,14 +181,15 @@ async function handleLike(event: Event, postId: string, userId: string) {
  }
 
 //visa top 10 liked inlägg
- const displayTop10LikedPosts = async () => {
+export const displayTop10LikedPosts = async () => {
   const db = getDatabase();
   const postsRef = ref(db, 'posts');
   const snapshot = await get(postsRef);
   const posts = snapshot.val();
+  console.log(posts)
 
   const postArray = Object.entries(posts).map(([id, post]) => ({ id, userId: (post as Post).userId, content: (post as Post).content, createdAt: (post as Post).createdAt, likes: (post as Post).likes }));
- 
+  console.log(postArray)
   postArray.sort((a, b) => b.likes - a.likes);
   const top10Posts = postArray.slice(0, 5);
   
