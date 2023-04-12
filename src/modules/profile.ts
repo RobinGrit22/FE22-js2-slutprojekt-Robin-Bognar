@@ -35,7 +35,7 @@ if (userId) {
     displayTop10LikedPosts()
   });
 
-  // Display the user's posts
+  // visa användarens inlägg
   const postsRef = ref(db, 'posts');
   onValue(postsRef, async (snapshot) => {
     const posts = snapshot.val();
@@ -44,12 +44,11 @@ if (userId) {
     if (posts && postContainer) {
       postContainer.innerHTML = '';
 
-      // Filter posts for the current user
+      
       const userPosts = Object.entries(posts)
         .filter(([_, post]) => (post as any).userId === userId)
         .map(([id, post]) => ({ id, ...(post as any) }));
 
-      // Sort the array based on createdAt attribute in descending order
       userPosts.sort((a, b) => new Date((b as any).createdAt).getTime() - new Date((a as any).createdAt).getTime());
       console.log(userPosts)
 
