@@ -97,16 +97,18 @@ export const displayTop10LikedPosts = async () => {
     for (const post of top10Posts) {
       const userSnapshot = await get(ref(db, `users/${post.userId}`));
       const user = userSnapshot.val();
-
-      const postItem = document.createElement('div');
-      postItem.className = 'postLiked10';
-      postItem.innerHTML = `
-        <h5 class="postNameLiked">${user.username}</h5>
-        <p class="postContentLiked">${post.content}</p>
-        <p class="postLikesLiked">Likes: ${post.likes}</p>
-      `;
-
-      top10PostsContainer.appendChild(postItem);
+      if(user) {
+        const postItem = document.createElement('div');
+        postItem.className = 'postLiked10';
+        postItem.innerHTML = `
+          <h5 class="postNameLiked">${user.username}</h5>
+          <p class="postContentLiked">${post.content}</p>
+          <p class="postLikesLiked">Likes: ${post.likes}</p>
+        `;
+  
+        top10PostsContainer.appendChild(postItem);
+      }
+     
     }
   }
 };

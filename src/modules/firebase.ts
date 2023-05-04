@@ -122,7 +122,6 @@ export const fetchUsers = async () => {
   const productsRef = ref(database, 'users');
   const productsSnapshot = await get(productsRef);
   const users = productsSnapshot.val();
-  console.log(users)
   return users;
 };
 

@@ -10,13 +10,11 @@ import { deleteAccount } from './firebase';
 
 //main function för att lägga i window EventListener så att allt annat laddar innan den körs.
 const main = () => {
-    console.log('main function called');
     const auth = getAuth();
    
 
   
     onAuthStateChanged(auth, (user) => {
-      console.log('auth state changed', user);
       if (user) {
         const userId = user.uid;
         const db = getDatabase();
@@ -24,7 +22,6 @@ const main = () => {
   
         onValue(userRef, (snapshot) => {
             const userData = snapshot.val();
-            console.log('userData:', userData);
             const userNameDisplay = document.getElementById('username'); 
             const userNameLogOutDisplay = document.querySelector('.logout-container p');
             const userImageDisplay = document.getElementById('profileImage') as HTMLImageElement;
@@ -41,9 +38,7 @@ const main = () => {
         
         //Visa users på höger section och lägg till url för profil besök
         fetchUsers().then((users) => {
-          console.log('users:', users);
-          console.log(Object.values(users))
-       
+
         interface User {
         username: string;
          }
@@ -115,8 +110,9 @@ export const displayPosts = (userId?: string) => {
       postContainer.innerHTML = '';
 
       
-      const postArray = Object.entries(posts).map(([id, post]) => ({ id, userId: (post as Post).userId, content: (post as Post).content, createdAt: (post as Post).createdAt, likes: (post as Post).likes }));
-     
+     // mainpage.ts
+
+const postArray = Object.entries(posts).map(([id, post]) => ({ id, userId: (post as Post).userId, content: (post as Post).content, createdAt: (post as Post).createdAt, likes: (post as Post).likes }));
 
 
       // Sortera array efter tid skapad
@@ -125,28 +121,31 @@ export const displayPosts = (userId?: string) => {
       for (const post of postArray) {
         const userSnapshot = await get(ref(db, `users/${post.userId}`));
         const user = userSnapshot.val();
+        
 
-        const postItem = document.createElement('div');
-        postItem.className = 'post-item';
-        postItem.innerHTML = `
-          <h5 class="postName">${user.username}</h5>
-          <p class="postContent">${post.content}</p>
-          <p class="postTime">${post.createdAt}</p>
-          <div class="post-actions">
-          <a class="like-btn" data-post-id="${post.id}"><i class="far fa-heart"></i> ${post.likes}</a>
-            <a class="reply-btn"><i class="far fa-comment"></i></a>
-          </div>
-        `;
-
-        postContainer.appendChild(postItem);
-
-        const likeBtn = postItem.querySelector('.like-btn') as HTMLElement;
-        if (likeBtn) {
-          likeBtn.addEventListener('click', (event) => {
-            event.preventDefault();
-            handleLike(event, post.id, post.userId);
-            
-          });
+        if(user){
+          const postItem = document.createElement('div');
+          postItem.className = 'post-item';
+          postItem.innerHTML = `
+            <h5 class="postName">${user.username}</h5>
+            <p class="postContent">${post.content}</p>
+            <p class="postTime">${post.createdAt}</p>
+            <div class="post-actions">
+            <a class="like-btn" data-post-id="${post.id}"><i class="far fa-heart"></i> ${post.likes}</a>
+              <a class="reply-btn"><i class="far fa-comment"></i></a>
+            </div>
+          `;
+  
+          postContainer.appendChild(postItem);
+  
+          const likeBtn = postItem.querySelector('.like-btn') as HTMLElement;
+          if (likeBtn) {
+            likeBtn.addEventListener('click', (event) => {
+              event.preventDefault();
+              handleLike(event, post.id, post.userId);
+              
+            });
+          }
         }
       }
     }
@@ -186,10 +185,9 @@ export const displayTop10LikedPosts = async () => {
   const postsRef = ref(db, 'posts');
   const snapshot = await get(postsRef);
   const posts = snapshot.val();
-  console.log(posts)
 
   const postArray = Object.entries(posts).map(([id, post]) => ({ id, userId: (post as Post).userId, content: (post as Post).content, createdAt: (post as Post).createdAt, likes: (post as Post).likes }));
-  console.log(postArray)
+  console.log('postarr:'+ postArray)
   postArray.sort((a, b) => b.likes - a.likes);
   const top10Posts = postArray.slice(0, 5);
   
@@ -201,16 +199,18 @@ export const displayTop10LikedPosts = async () => {
     for (const post of top10Posts) {
       const userSnapshot = await get(ref(db, `users/${post.userId}`));
       const user = userSnapshot.val();
-
-      const postItem = document.createElement('div');
-      postItem.className = 'postLiked10';
-      postItem.innerHTML = `
-        <h5 class="postNameLiked">${user.username}</h5>
-        <p class="postContentLiked">${post.content}</p>
-        <p class="postLikesLiked">Likes: ${post.likes}</p>
-      `;
-
-      top10PostsContainer.appendChild(postItem);
+      
+      if(user){
+        const postItem = document.createElement('div');
+        postItem.className = 'postLiked10';
+        postItem.innerHTML = `
+          <h5 class="postNameLiked">${user.username}</h5>
+          <p class="postContentLiked">${post.content}</p>
+          <p class="postLikesLiked">Likes: ${post.likes}</p>
+        `;
+  
+        top10PostsContainer.appendChild(postItem);
+      }
     }
   }
 };
